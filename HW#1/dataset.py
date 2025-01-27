@@ -1,5 +1,9 @@
 import pandas as pd
 from datetime import datetime
+from itertools import combinations
+from collections import Counter
+
+
 #Creat map for Product Prices
 product_prices = {
     201: 10.5,
@@ -108,7 +112,38 @@ print(f"Unique Customers: {unique_customers}")
 total_revenue = df["TotalPrice"].sum()
 print(f"Total Revenue: ${total_revenue:.2f}")
 
+#Average Transaction total
+average_transaction_total = df.groupby("TransactionID")["TotalPrice"].sum().mean()
+print(f"Average Transaction Total: ${average_transaction_total:.2f}")
+
 # Most Frequently Purchased Product
 most_frequent_product = df.groupby("ProductID")["Quantity"].sum().idxmax()
 most_frequent_quantity = df.groupby("ProductID")["Quantity"].sum().max()
 print(f"Most Frequently Purchased Product: ProductID {most_frequent_product} with {most_frequent_quantity} units sold")
+
+# Identify high-volume and low-volume buyers using quantiles
+customer_totals = df.groupby("CustomerID")["Quantity"].sum()
+high_volume_threshold = customer_totals.quantile(0.60)
+low_volume_threshold = customer_totals.quantile(0.40)
+
+high_volume_customers = customer_totals[customer_totals > high_volume_threshold]
+low_volume_customers = customer_totals[customer_totals <= low_volume_threshold]
+
+print("\nHigh-volume customers:")
+print(high_volume_customers)
+print("\nLow-volume customers:")
+print(low_volume_customers)
+
+# Identify potential product bundling opportunities
+# Generate product pairs from transactions
+product_pairs = []
+for transaction_id in df["TransactionID"].unique():
+    products = df[df["TransactionID"] == transaction_id]["ProductID"].tolist()
+    product_pairs.extend(combinations(products, 2))
+
+# Count frequent product pairs
+pair_counts = Counter(product_pairs)
+common_pairs = pair_counts.most_common(5)
+print("\nTop product bundling opportunities:")
+for pair, count in common_pairs:
+    print(f"Products {pair} were purchased together {count} times")
