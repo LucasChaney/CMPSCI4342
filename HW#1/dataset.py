@@ -4,7 +4,7 @@ from itertools import combinations
 from collections import Counter
 
 
-#Creat map for Product Prices
+#Creat Map for Product Prices
 product_prices = {
     201: 10.5,
     202: 20.3,
@@ -18,7 +18,7 @@ product_prices = {
     210: 5.3
 }
 
-# Create dataset
+# Create Dataset
 data = {
     "TransactionID": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     "CustomerID": [101, 102, 103, 104, 105, 103, 106, 107, 108, 102],
@@ -38,7 +38,7 @@ data = {
     ],
 }
 
-# Create a class called Transaction
+# Create a Class Called Transaction
 class Transaction:
     def __init__(self,TransactionID,CustomerID,Date):
         self.TransactionID = TransactionID
@@ -67,7 +67,7 @@ class Transaction:
         print(f"    Total Price: {self.total_price()}")
 
 
-# Create a list of Transaction objects
+# Create a List of Transaction Objects
 transactions = []
 for i in range(len(data["TransactionID"])):
     transaction = Transaction(data["TransactionID"][i],data["CustomerID"][i],data["Date"][i])
@@ -83,7 +83,7 @@ for transaction in transactions:
     transaction.display()
     print("\n")
 
-#Flatten transactions into a DataFrame
+#Flatten Transactions Into a DataFrame
 rows = []
 for transaction in transactions:
     for item in transaction.items:
@@ -101,7 +101,6 @@ df = pd.DataFrame(rows)
 print("\nFlattened DataFrame")
 print(df)
 
-# Perform exploratory data analysis
 # Total Transactions and Unique Customers
 total_transactions = df["TransactionID"].nunique()
 unique_customers = df["CustomerID"].nunique()
@@ -121,7 +120,7 @@ most_frequent_product = df.groupby("ProductID")["Quantity"].sum().idxmax()
 most_frequent_quantity = df.groupby("ProductID")["Quantity"].sum().max()
 print(f"Most Frequently Purchased Product: ProductID {most_frequent_product} with {most_frequent_quantity} units sold")
 
-# Identify high-volume and low-volume buyers using quantiles
+# Identify high-volume and low-volume buyers
 customer_totals = df.groupby("CustomerID")["Quantity"].sum()
 high_volume_threshold = customer_totals.quantile(0.60)
 low_volume_threshold = customer_totals.quantile(0.40)
@@ -135,7 +134,6 @@ print("\nLow-volume customers:")
 print(low_volume_customers)
 
 # Identify potential product bundling opportunities
-# Generate product pairs from transactions
 product_pairs = []
 for transaction_id in df["TransactionID"].unique():
     products = df[df["TransactionID"] == transaction_id]["ProductID"].tolist()
